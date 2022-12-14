@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,6 +18,6 @@ public class Management {
   @Column
   private String name;
 
-  @Column
-  private ArrayList<TaskList> task;
+  @OneToMany(mappedBy = "management", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private List<Tasks> task;
 }

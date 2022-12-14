@@ -3,9 +3,8 @@ package br.com.aula.managementms.dto;
 import lombok.Data;
 
 @Data
-public class TaskList {
+public class TasksDTO {
 
-  private Integer id;
   private String description;
   private String step;
 }

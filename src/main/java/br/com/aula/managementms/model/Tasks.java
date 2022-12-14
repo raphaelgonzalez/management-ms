@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Data
-public class TaskList {
+public class Tasks {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
