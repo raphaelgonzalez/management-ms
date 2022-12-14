@@ -68,6 +68,7 @@ public class ManagementController {
 
     if (delete) {
       return ResponseEntity.status(HttpStatus.OK).build();
+
     }
     return ResponseEntity.notFound().build();
 
