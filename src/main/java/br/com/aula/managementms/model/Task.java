@@ -3,20 +3,24 @@ package br.com.aula.managementms.model;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
-public class Tasks {
+@Entity
+@Table(name = "tb_task")
+public class Task {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
   private Integer id;
   @Column
   private String description;
   @Column
   private String step;
+
+  @ManyToOne
+  @JoinColumn(name = "id_management", referencedColumnName = "id")
+  private Management management;
 
 }

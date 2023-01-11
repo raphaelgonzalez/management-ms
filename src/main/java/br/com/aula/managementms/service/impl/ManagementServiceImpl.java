@@ -3,13 +3,14 @@ package br.com.aula.managementms.service.impl;
 import br.com.aula.managementms.dto.ManagementDTO;
 import br.com.aula.managementms.dto.TasksDTO;
 import br.com.aula.managementms.model.Management;
-import br.com.aula.managementms.model.Tasks;
+import br.com.aula.managementms.model.Task;
 import br.com.aula.managementms.repository.ManagementRepository;
 import br.com.aula.managementms.service.ManagementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,14 +23,16 @@ public class ManagementServiceImpl implements ManagementService {
   ManagementRepository repository;
 
   @Override
+  @Transactional
   public Optional<ManagementDTO> create(ManagementDTO request) {
     log.info("create... {}", request);
 
     Management management = new Management();
 
-    ArrayList<Tasks> taskList = new ArrayList<>();
-    for (TasksDTO taskListDTO : request.getTask()) {
-      Tasks taskList1 = new Tasks();
+    ArrayList<Task> taskList = new ArrayList<>();
+    for (TasksDTO taskListDTO : request.getTasks()) {
+      Task taskList1 = new Task();
+      taskList1.setManagement(management);
       taskList1.setDescription(taskListDTO.getDescription());
       taskList1.setStep(taskListDTO.getStep());
 
@@ -37,14 +40,14 @@ public class ManagementServiceImpl implements ManagementService {
     }
 
     management.setName(request.getName());
-    management.setTask(taskList);
+    management.setTasks(taskList);
 
     management = repository.save(management);
 
     ManagementDTO response = new ManagementDTO();
 
     response.setName(management.getName());
-    response.setTask(request.getTask());
+    response.setTasks(request.getTasks());
 
     return Optional.of(response);
   }
@@ -64,7 +67,10 @@ public class ManagementServiceImpl implements ManagementService {
       ManagementDTO response = new ManagementDTO();
 
       response.setName(updated.getName());
-      response.setTask(response.getTask());
+
+
+
+      response.setTasks(response.getTasks());
 
       return Optional.of(response);
 
@@ -80,9 +86,18 @@ public class ManagementServiceImpl implements ManagementService {
     if (management.isPresent()) {
 
       ManagementDTO  response = new ManagementDTO();
+      List<TasksDTO> tasksDTOList= new ArrayList<>();
+      for (Task task : management.get().getTasks()) {
+        TasksDTO tasksDTO = new TasksDTO();
+        tasksDTO.setStep(task.getStep());
+        tasksDTO.setDescription(task.getDescription());
+
+        tasksDTOList.add(tasksDTO);
+      }
 
       response.setName(management.get().getName());
-      response.setTask(response.getTask());
+      response.setTasks(tasksDTOList);
+
 
       return Optional.of(response);
     }
@@ -102,8 +117,17 @@ public class ManagementServiceImpl implements ManagementService {
 
         ManagementDTO response = new ManagementDTO();
 
+        ArrayList<TasksDTO> taskListResponse = new ArrayList<>();
+        for (Task task : management.getTasks()) {
+          TasksDTO tasksDTO = new TasksDTO();
+          tasksDTO.setDescription(task.getDescription());
+          tasksDTO.setStep(task.getStep());
+
+          taskListResponse.add(tasksDTO);
+        }
+
         response.setName(management.getName());
-        response.setTask(response.getTask());
+        response.setTasks(taskListResponse);
         responses.add(response);
       }
     }
