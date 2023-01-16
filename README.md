@@ -9,6 +9,7 @@
 - GET /tasks: getAllTasks()
 - PUT /{id}: update()
 - DELETE /{id}: delete()
+- GET /export: exportData() -- Responsavel por exportar para csv os dados que existem no banco de dados.
 
 ## Model
 ``` json

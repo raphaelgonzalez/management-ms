@@ -1,6 +1,7 @@
 package br.com.aula.managementms.controller;
 
 
+import br.com.aula.managementms.csv.CsvFileGenerator;
 import br.com.aula.managementms.dto.ManagementDTO;
 import br.com.aula.managementms.service.impl.ManagementServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,9 @@ public class ManagementController {
 
   @Autowired
   private ManagementServiceImpl service;
+
+  @Autowired
+  private CsvFileGenerator csvGenerator;
 
   @PostMapping
   private ResponseEntity<ManagementDTO> create(@RequestBody ManagementDTO managementDTO) {
@@ -72,5 +78,11 @@ public class ManagementController {
     }
     return ResponseEntity.notFound().build();
 
+  }
+  @GetMapping("/export-to-csv")
+  public void exportIntoCSV(HttpServletResponse response) throws IOException {
+    response.setContentType("text/csv");
+    response.addHeader("Content-Disposition", "attachment; filename=\"management.csv\"");
+    csvGenerator.writeStudentsToCsv(service.getManagementOfList(), response.getWriter());
   }
 }

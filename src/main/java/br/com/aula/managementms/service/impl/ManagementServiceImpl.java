@@ -145,4 +145,14 @@ public class ManagementServiceImpl implements ManagementService {
     }
     return false;
   }
+  @Override
+  public void addManagement(Management management) {
+    repository.save(management);
+  }
+
+  @Override
+  public List <Management> getManagementOfList() {
+    return repository.findAll();
+  }
+
 }
