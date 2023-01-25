@@ -151,8 +151,32 @@ public class ManagementServiceImpl implements ManagementService {
   }
 
   @Override
-  public List <Management> getManagementOfList() {
-    return repository.findAll();
+  public Optional<List<ManagementDTO>> getManagementOfList() {
+      log.info("getAll...");
+      List<Management> managements = repository.findAll();
+
+      List<ManagementDTO> responses = new ArrayList<>();
+
+      if (!managements.isEmpty()) {
+        for (Management management : managements) {
+
+          ManagementDTO response = new ManagementDTO();
+
+          ArrayList<TasksDTO> taskListResponse = new ArrayList<>();
+          for (Task task : management.getTasks()) {
+            TasksDTO tasksDTO = new TasksDTO();
+            tasksDTO.setDescription(task.getDescription());
+            tasksDTO.setStep(task.getStep());
+
+            taskListResponse.add(tasksDTO);
+          }
+
+          response.setName(management.getName());
+          response.setTasks(taskListResponse);
+          responses.add(response);
+        }
+      }
+      return Optional.of(responses);
   }
 
 }

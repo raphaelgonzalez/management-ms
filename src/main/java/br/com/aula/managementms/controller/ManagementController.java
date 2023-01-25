@@ -1,9 +1,10 @@
 package br.com.aula.managementms.controller;
 
 
-import br.com.aula.managementms.csv.CsvFileGenerator;
+import br.com.aula.managementms.utils.CsvFileGenerator;
 import br.com.aula.managementms.dto.ManagementDTO;
 import br.com.aula.managementms.service.impl.ManagementServiceImpl;
+import br.com.aula.managementms.utils.CsvToExcel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,9 @@ public class ManagementController {
 
   @Autowired
   private CsvFileGenerator csvGenerator;
+
+  @Autowired
+  private CsvToExcel converter;
 
   @PostMapping
   private ResponseEntity<ManagementDTO> create(@RequestBody ManagementDTO managementDTO) {
@@ -79,10 +83,19 @@ public class ManagementController {
     return ResponseEntity.notFound().build();
 
   }
+
   @GetMapping("/export-to-csv")
   public void exportIntoCSV(HttpServletResponse response) throws IOException {
     response.setContentType("text/csv");
-    response.addHeader("Content-Disposition", "attachment; filename=\"management.csv\"");
+    response.addHeader("Content-Disposition", "attachment; filename=\"managements.csv\"");
     csvGenerator.writeStudentsToCsv(service.getManagementOfList(), response.getWriter());
+  }
+
+  @GetMapping("/converter-to-excel")
+  public void convertToExcel(@RequestParam("strSource") String source,
+                             @RequestParam("strDestination") String destination,
+                             @RequestParam("extension") String extension)
+    throws  IOException {
+    converter.convertCsvToExcel(source, destination, extension);
   }
 }

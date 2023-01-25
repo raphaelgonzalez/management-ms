@@ -22,5 +22,5 @@ public interface ManagementService {
    * CSV
    */
   void addManagement(Management management);
-  List<Management> getManagementOfList();
+  Optional<List<ManagementDTO>> getManagementOfList();
 }
