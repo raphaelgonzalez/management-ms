@@ -4,8 +4,10 @@ package br.com.aula.managementms.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+@XmlRootElement
 @Entity
 @Data
 @Table(name = "tb_management")
