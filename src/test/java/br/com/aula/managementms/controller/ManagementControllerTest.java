@@ -142,4 +142,24 @@ public class ManagementControllerTest {
       .andDo(MockMvcResultHandlers.print());
   }
 
+  @Test
+  @DisplayName("EXPORT TO CSV")
+  void exportCsvTest() throws Exception {
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/managers/export-to-csv"));
+  }
+
+  @Test
+  @DisplayName("CONVERT TO XLS")
+  void convertTest() throws Exception {
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/managers/converter-to-excel")
+      .param("strSource","C:/Users/gonza/Downloads/managements.csv")
+      .param("strDestination","C:/Users/gonza/Downloads")
+      .param("extension", ".xlsx"));
+
+  }
+
+
+
 }
