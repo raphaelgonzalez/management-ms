@@ -5,6 +5,7 @@ import br.com.aula.managementms.dto.TasksDTO;
 import br.com.aula.managementms.model.Management;
 import br.com.aula.managementms.model.Task;
 import br.com.aula.managementms.repository.ManagementRepository;
+import br.com.aula.managementms.service.ManagementService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,18 +33,16 @@ class ManagementServiceImplTest {
   private ManagementRepository repository;
 
   @InjectMocks
-  private ManagementServiceImpl managementServiceImpl;
+  private ManagementServiceImpl managementService;
 
   private ManagementDTO managementDTO;
 
   private Management management;
-  private TasksDTO tasksDTO;
+
 
   @BeforeEach
   void up() {
-
     managementDTO = new ManagementDTO();
-    tasksDTO = new TasksDTO();
     management = new Management();
 
     Task task1 = new Task();
@@ -52,13 +51,11 @@ class ManagementServiceImplTest {
     ArrayList<Task> taskList = new ArrayList<>();
     taskList.add(task1);
 
-
     management.setId(1);
     management.setName("Raphael Gonzalez");
     management.setTasks(taskList);
 
-
-
+    repository.save(management);
 
     TasksDTO tasksDTO = new TasksDTO();
     tasksDTO.setStep("In Progress 2");
@@ -70,20 +67,11 @@ class ManagementServiceImplTest {
     managementDTO.setTasks(list);
   }
 
-//  @AfterEach
-//  void down() {
-//    repository.deleteAll();
-//  }
-
   @Test
   @DisplayName("Test Create")
   void createTest() {
 
-
-    Management save = repository.save(management);
-    save.setName("Rapha");
-    managementDTO.setName(save.getName());
-    Mockito.when(managementServiceImpl.create(ArgumentMatchers.eq(managementDTO))).thenReturn(Optional.ofNullable(managementDTO));
+    Mockito.when(managementService.create(managementDTO)).thenReturn(Optional.of(managementDTO));
 
   }
 
