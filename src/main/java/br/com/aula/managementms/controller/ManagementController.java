@@ -88,7 +88,7 @@ public class ManagementController {
   public void exportIntoCSV(HttpServletResponse response) throws IOException {
     response.setContentType("text/csv");
     response.addHeader("Content-Disposition", "attachment; filename=\"managements.csv\"");
-    csvGenerator.writeStudentsToCsv(service.getManagementOfList(), response.getWriter());
+    csvGenerator.writeStudentsToCsv(service.getAll(), response.getWriter());
   }
 
   @GetMapping("/converter-to-excel")

@@ -1,80 +1,110 @@
 package br.com.aula.managementms.service.impl;
 
 import br.com.aula.managementms.dto.ManagementDTO;
-import br.com.aula.managementms.dto.TasksDTO;
-import br.com.aula.managementms.model.Management;
-import br.com.aula.managementms.model.Task;
 import br.com.aula.managementms.repository.ManagementRepository;
 import br.com.aula.managementms.service.ManagementService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import br.com.six2six.fixturefactory.Fixture;
+import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:populate-database.sql"})
 class ManagementServiceImplTest {
 
-  @Mock
-  private ManagementRepository repository;
+  @Autowired
+  private ManagementService managementService;
 
-  @InjectMocks
-  private ManagementServiceImpl managementService;
+  @Autowired
+  private ManagementRepository managementRepository;
 
-  private ManagementDTO managementDTO;
-
-  private Management management;
-
-
-  @BeforeEach
-  void up() {
-    managementDTO = new ManagementDTO();
-    management = new Management();
-
-    Task task1 = new Task();
-    task1.setStep("In Progress");
-    task1.setDescription("Realizar setup do projeto");
-    ArrayList<Task> taskList = new ArrayList<>();
-    taskList.add(task1);
-
-    management.setId(1);
-    management.setName("Raphael Gonzalez");
-    management.setTasks(taskList);
-
-    repository.save(management);
-
-    TasksDTO tasksDTO = new TasksDTO();
-    tasksDTO.setStep("In Progress 2");
-    tasksDTO.setDescription("Realizar setup do projeto 2");
-    ArrayList<TasksDTO> list = new ArrayList<>();
-    list.add(tasksDTO);
-
-    managementDTO.setName("Caio");
-    managementDTO.setTasks(list);
+  @BeforeAll
+  private static void setUp() {
+    FixtureFactoryLoader.loadTemplates("br.com.aula.managementms.fixture");
   }
 
   @Test
-  @DisplayName("Test Create")
-  void createTest() {
+  public void shouldCreateManagement() {
+    ManagementDTO request = Fixture.from(ManagementDTO.class).gimme("valid");
+    Optional<ManagementDTO> response = managementService.create(request);
 
-    Mockito.when(managementService.create(managementDTO)).thenReturn(Optional.of(managementDTO));
+    assertNotNull(response.get());
+    assertNotNull(request.getName(), response.get().getName());
+    assertNotNull(request.getTasks(), response.get().getTasks().toString());
+  }
+
+  @Test
+  public void shouldUpdateManagement() {
+    ManagementDTO request = Fixture.from(ManagementDTO.class).gimme("valid-update");
+    Optional<ManagementDTO> response = managementService.get(99);
+    Optional<ManagementDTO> updated = managementService.update(request, 99);
+
+    MatcherAssert.assertThat(response.get().getName(), CoreMatchers.is(Matchers.not(updated.get().getName())));
+    assertEquals(request.getName(), updated.get().getName());
 
   }
 
+  @Test
+  public void shouldNotUpdateManagement() {
+    ManagementDTO request = Fixture.from(ManagementDTO.class).gimme("valid-update");
+    Optional<ManagementDTO> updated = managementService.update(request, 999);
+
+   assertNotNull(updated);
+
+  }
+
+
+  @Test
+  public void shouldGetManagement() {
+    Optional<ManagementDTO> response = managementService.get(99);
+
+    assertNotNull(response.get());
+  }
+
+  @Test
+  public void shouldNotGetManagement() {
+    Optional<ManagementDTO> response = managementService.get(999);
+
+    assertNotNull(response);
+  }
+
+
+  @Test
+  public void shouldFindAllManagement() {
+
+    Optional<List<ManagementDTO>> responses = managementService.getAll();
+
+    assertNotNull(responses.get());
+  }
+
+  @Test
+  public void shouldDeleteManagement() {
+
+    boolean response = managementService.delete(99);
+
+    assertTrue(response);
+  }
+  @Test
+  public void shouldNotDeleteManagement() {
+
+    boolean response = managementService.delete(999);
+
+    assertFalse(response);
+  }
 
 
 }

@@ -18,9 +18,4 @@ public interface ManagementService {
 
   boolean delete(int id);
 
-  /*
-   * CSV
-   */
-  void addManagement(Management management);
-  Optional<List<ManagementDTO>> getManagementOfList();
 }

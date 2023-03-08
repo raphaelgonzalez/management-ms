@@ -58,7 +58,7 @@ public class ManagementServiceImpl implements ManagementService {
     Optional<Management> management = repository.findById(id);
 
     if (management.isPresent()) {
-      if (request.getName().isEmpty()) {
+      if (!request.getName().isEmpty()) {
         management.get().setName(request.getName());
       }
 
@@ -67,7 +67,6 @@ public class ManagementServiceImpl implements ManagementService {
       ManagementDTO response = new ManagementDTO();
 
       response.setName(updated.getName());
-
 
 
       response.setTasks(response.getTasks());
@@ -79,14 +78,15 @@ public class ManagementServiceImpl implements ManagementService {
   }
 
   @Override
+  @Transactional
   public Optional<ManagementDTO> get(int id) {
     log.info("get... {}", id);
     Optional<Management> management = repository.findById(id);
 
     if (management.isPresent()) {
 
-      ManagementDTO  response = new ManagementDTO();
-      List<TasksDTO> tasksDTOList= new ArrayList<>();
+      ManagementDTO response = new ManagementDTO();
+      List<TasksDTO> tasksDTOList = new ArrayList<>();
       for (Task task : management.get().getTasks()) {
         TasksDTO tasksDTO = new TasksDTO();
         tasksDTO.setStep(task.getStep());
@@ -106,6 +106,7 @@ public class ManagementServiceImpl implements ManagementService {
   }
 
   @Override
+  @Transactional
   public Optional<List<ManagementDTO>> getAll() {
     log.info("getAll...");
     List<Management> managements = repository.findAll();
@@ -145,38 +146,4 @@ public class ManagementServiceImpl implements ManagementService {
     }
     return false;
   }
-  @Override
-  public void addManagement(Management management) {
-    repository.save(management);
-  }
-
-  @Override
-  public Optional<List<ManagementDTO>> getManagementOfList() {
-      log.info("getAll...");
-      List<Management> managements = repository.findAll();
-
-      List<ManagementDTO> responses = new ArrayList<>();
-
-      if (!managements.isEmpty()) {
-        for (Management management : managements) {
-
-          ManagementDTO response = new ManagementDTO();
-
-          ArrayList<TasksDTO> taskListResponse = new ArrayList<>();
-          for (Task task : management.getTasks()) {
-            TasksDTO tasksDTO = new TasksDTO();
-            tasksDTO.setDescription(task.getDescription());
-            tasksDTO.setStep(task.getStep());
-
-            taskListResponse.add(tasksDTO);
-          }
-
-          response.setName(management.getName());
-          response.setTasks(taskListResponse);
-          responses.add(response);
-        }
-      }
-      return Optional.of(responses);
-  }
-
 }
